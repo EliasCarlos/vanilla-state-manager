@@ -20,6 +20,9 @@ export function render() {
           <button data-action="add-helper" data-id="${task.id}">
             Ajudar
           </button>
+          <button data-action="complete-task" data-id="${task.id}">
+            Concluir
+          </button>
         </div>
       </div>
     `,

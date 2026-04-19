@@ -37,7 +37,7 @@ function findTask(taskId: number): Task {
   return task;
 }
 
-function updateTask(taskId: number, status: Status, userId: string): Task {
+export function updateTask(taskId: number, status: Status, userId: string): Task {
   const task = findTask(taskId);
 
   if (status === 'concluida' && task.userId !== userId) {
@@ -65,7 +65,7 @@ export function addHelper(taskId: number, userId: string) {
   return findTask(taskId);
 }
 
-function addComment(taskId: number, userId: string, text: string) {
+export function addComment(taskId: number, userId: string, text: string) {
   if (!text.trim()) {
     throw new Error('Comentário não pode ser vazio');
   }
