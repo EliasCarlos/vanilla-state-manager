@@ -1,5 +1,13 @@
 import { Status } from '../domain/task.js';
-import { addComment, addHelper, createTask, deleteTask, findTask, updateTask } from '../index.js';
+import {
+  addComment,
+  addHelper,
+  createTask,
+  deleteTask,
+  findTask,
+  removeComment,
+  updateTask,
+} from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
@@ -42,6 +50,14 @@ export function setupEvents() {
     if (target.dataset.action === 'open-comments') {
       const id = Number(target.dataset.id);
       openModal(id);
+    }
+
+    if (target.dataset.action === 'remove-comment') {
+      const commentId = Number(target.dataset.id);
+      if (modalTaskId !== null) {
+        removeComment(modalTaskId, 'user1', commentId);
+        openModal(modalTaskId);
+      }
     }
   });
 
@@ -98,6 +114,7 @@ export function setupEvents() {
             hour: '2-digit',
             minute: '2-digit',
           })}</span>
+          <button data-action="remove-comment" data-id="${c.id}">Remover</button>
         </div>
       `,
           )

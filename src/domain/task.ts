@@ -3,6 +3,7 @@ export type Status = 'pendente' | 'concluida' | 'em andamento';
 export type State = { tasks: Task[] };
 
 export type TaskComment = {
+  id: number;
   userId: string;
   text: string;
   createdAt: Date;

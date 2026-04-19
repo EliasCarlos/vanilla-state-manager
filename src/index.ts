@@ -72,12 +72,28 @@ export function addComment(taskId: number, userId: string, text: string) {
   }
 
   const comment: TaskComment = {
+    id: Date.now(),
     userId,
     text,
     createdAt: new Date(),
   };
 
-  store.dispatch({ type: 'ADD_COMMENT', payload: { taskId, userId, text } });
+  store.dispatch({
+    type: 'ADD_COMMENT',
+    payload: { taskId, userId, text, commentId: comment.id },
+  });
+
+  return findTask(taskId);
+}
+
+export function removeComment(taskId: number, userId: string, commentId: number) {
+  const task = findTask(taskId);
+
+  if (!canUserInteract(task, userId)) {
+    throw new Error('Você não tem permissão para remover este comentário');
+  }
+
+  store.dispatch({ type: 'REMOVE_COMMENT', payload: { taskId, userId, commentId } });
 
   return findTask(taskId);
 }
