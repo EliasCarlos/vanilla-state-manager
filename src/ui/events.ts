@@ -62,13 +62,30 @@ export function setupEvents() {
     }
   });
 
+  document.addEventListener('input', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.id === 'modal-input') {
+      const input = target as HTMLInputElement;
+      const submitBtn = document.getElementById('modal-add') as HTMLButtonElement;
+      if (submitBtn) {
+        submitBtn.disabled = !input.value.trim();
+      }
+    }
+  });
+
   const handleAddComment = () => {
     const { ui } = store.getState();
     const input = document.getElementById('modal-input') as HTMLInputElement;
+    const submitBtn = document.getElementById('modal-add') as HTMLButtonElement;
 
-    if (!input || !input.value.trim() || !ui.modalTaskId) return;
+    if (!input || !input.value.trim() || !ui.modalTaskId || !submitBtn) return;
 
-    addComment(ui.modalTaskId, 'user1', input.value);
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+      addComment(ui.modalTaskId!, 'user1', input.value);
+    }, 400);
   };
 
   document.addEventListener('keydown', (e) => {

@@ -120,7 +120,7 @@ export function render() {
   
           <div class="modal-input-area">
             <input id="modal-input" placeholder="Escreva um comentário..." />
-            <button id="modal-add" class="btn" data-action="submit-comment">Adicionar</button>
+            <button id="modal-add" class="btn" data-action="submit-comment" disabled>Adicionar</button>
           </div>
   
           <button id="modal-close" class="btn" data-action="close-modal">Fechar</button>
