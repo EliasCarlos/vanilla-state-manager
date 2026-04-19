@@ -4,8 +4,7 @@ export function render() {
   const app = document.getElementById('app');
   const { tasks, filter } = store.getState();
 
-  const filteredTasks =
-    filter === 'todas' ? tasks : tasks.filter((task) => task.status === filter);
+  const filteredTasks = filter === 'todas' ? tasks : tasks.filter((task) => task.status === filter);
 
   if (!app) return;
 
@@ -16,8 +15,8 @@ export function render() {
         <h3>${task.title}</h3>
         <p>${task.description}</p>
         <p>Status: ${task.status}</p>
-        <p><strong>Helpers:</strong> ${task.helpers.length} ${task.helpers.join(', ') || 'Nenhum'}</p>
-        <p><strong>Comentários:</strong> ${task.comments.length} ${task.comments.map((c) => c.text).join(', ') || 'Nenhum'}</p>
+        <p><strong>Helpers:</strong> ${task.helpers.length} ${task.helpers.join(', ')}</p>
+        <p><strong>Comentários:</strong> ${task.comments.length} ${task.comments.map((c) => c.text).join(', ')}</p>
 
         <div class="comments">
           <input type="text" placeholder="Comentário" id="comment-${task.id}" />

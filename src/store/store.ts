@@ -1,5 +1,6 @@
 import { Status, Task, User } from '../domain/task.js';
 import { Action, reducer } from './reducer.js';
+import { debounceSaveState, loadState } from './storage.js';
 
 type State = {
   tasks: Task[];
@@ -10,11 +11,13 @@ type State = {
 export const actionsHistory: Action[] = [];
 
 export const store = {
-  state: {
-    tasks: [],
-    user: {} as User,
-    filter: 'todas',
-  } as State,
+  state:
+    loadState() ||
+    ({
+      tasks: [],
+      user: {} as User,
+      filter: 'todas',
+    } as State),
 
   listeners: [] as Array<(newState: State, prevState: State) => void>,
 
@@ -26,6 +29,7 @@ export const store = {
     actionsHistory.push(action);
     const prevState = this.state;
     this.state = reducer(this.state, action);
+    debounceSaveState(this.state);
     this.listeners.forEach((listener) => listener(this.state, prevState));
   },
 
