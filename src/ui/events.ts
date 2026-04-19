@@ -1,4 +1,4 @@
-import { addComment, addHelper, createTask, deleteTask, updateTask } from '../index.js';
+import { addComment, addHelper, createTask, deleteTask, setFilter, updateTask } from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
@@ -41,6 +41,11 @@ export function setupEvents() {
       addComment(id, 'user1', comment);
 
       commentInput.value = '';
+    }
+
+    if (target.dataset.action === 'filter') {
+      const filter = target.dataset.filter as any;
+      setFilter(filter);
     }
   });
 }

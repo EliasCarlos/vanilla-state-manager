@@ -2,11 +2,14 @@ import { store } from '../store/store.js';
 
 export function render() {
   const app = document.getElementById('app');
-  const { tasks } = store.getState();
+  const { tasks, filter } = store.getState();
+
+  const filteredTasks =
+    filter === 'todas' ? tasks : tasks.filter((task) => task.status === filter);
 
   if (!app) return;
 
-  app.innerHTML = tasks
+  app.innerHTML = filteredTasks
     .map(
       (task) => `
       <div class="task">

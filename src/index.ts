@@ -103,6 +103,10 @@ export function deleteTask(taskId: number, userId: string) {
   return { message: 'Task deletada com sucesso' };
 }
 
+export function setFilter(filter: Status | 'todas') {
+  store.dispatch({ type: 'SET_FILTER', payload: filter });
+}
+
 store.subscribe(render);
 
 setupEvents();
