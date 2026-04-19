@@ -1,11 +1,12 @@
 import { Status } from '../domain/task.js';
-import { addComment, addHelper, createTask, deleteTask, updateTask } from '../index.js';
+import { addComment, addHelper, createTask, deleteTask, findTask, updateTask } from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
   const descriptionInput = document.getElementById('description') as HTMLInputElement;
 
   let draggedTaskId: number | null = null;
+  let modalTaskId: number | null = null;
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
@@ -27,29 +28,20 @@ export function setupEvents() {
       addHelper(id, 'user2');
     }
 
-    if (target.dataset.action === 'complete-task') {
-      const id = Number(target.dataset.id);
-      updateTask(id, 'concluida', 'user1');
-    }
-
     if (target.dataset.action === 'delete-task') {
       const id = Number(target.dataset.id);
       deleteTask(id, 'user1');
-    }
-
-    if (target.dataset.action === 'add-comment') {
-      const id = Number(target.dataset.id);
-      const commentInput = document.getElementById(`comment-${id}`) as HTMLInputElement;
-      const comment = commentInput.value;
-      addComment(id, 'user1', comment);
-
-      commentInput.value = '';
     }
 
     if (target.dataset.action === 'move') {
       const id = Number(target.dataset.id);
       const status = target.dataset.status as Status;
       updateTask(id, status, 'user1');
+    }
+
+    if (target.dataset.action === 'open-comments') {
+      const id = Number(target.dataset.id);
+      openModal(id);
     }
   });
 
@@ -81,6 +73,64 @@ export function setupEvents() {
       const newStatus = column.dataset.status as Status;
       updateTask(draggedTaskId, newStatus, 'user1');
       draggedTaskId = null;
+    }
+  });
+
+  function openModal(taskId: number) {
+    const modal = document.getElementById('modal')!;
+    const commentsContainer = document.getElementById('modal-comments')!;
+
+    const task = findTask(taskId);
+
+    modalTaskId = taskId;
+
+    commentsContainer.innerHTML = task.comments.length
+      ? task.comments
+          .map(
+            (c) => `
+        <div class="comment-item">
+          <p>${c.text}</p>
+        </div>
+      `,
+          )
+          .join('')
+      : '<p style="opacity:0.6;">Nenhum comentário ainda</p>';
+
+    modal.classList.remove('hidden');
+
+    const input = document.getElementById('modal-input') as HTMLInputElement;
+    input.value = '';
+    input.focus();
+
+    commentsContainer.scrollTop = commentsContainer.scrollHeight;
+  }
+
+  document.getElementById('modal-close')?.addEventListener('click', () => {
+    document.getElementById('modal')?.classList.add('hidden');
+  });
+
+  document.getElementById('modal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      document.getElementById('modal')?.classList.add('hidden');
+    }
+  });
+
+  const handleAddComment = () => {
+    const input = document.getElementById('modal-input') as HTMLInputElement;
+
+    if (!input.value.trim() || modalTaskId === null) return;
+
+    addComment(modalTaskId, 'user1', input.value);
+    input.value = '';
+
+    openModal(modalTaskId);
+  };
+
+  document.getElementById('modal-add')?.addEventListener('click', handleAddComment);
+
+  document.getElementById('modal-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleAddComment();
     }
   });
 }

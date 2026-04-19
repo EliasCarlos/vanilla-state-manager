@@ -1,6 +1,6 @@
 export type Status = 'pendente' | 'concluida' | 'em andamento';
 
-export type State = { tasks: Task[]; user?: User; filter: Status | 'todas' };
+export type State = { tasks: Task[] };
 
 export type TaskComment = {
   userId: string;

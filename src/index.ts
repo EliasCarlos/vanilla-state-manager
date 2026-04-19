@@ -21,12 +21,7 @@ export function createTask(title: string, description: string, userId: string): 
   return task;
 }
 
-function getTasks(): Task[] {
-  const { tasks } = store.getState();
-  return tasks;
-}
-
-function findTask(taskId: number): Task {
+export function findTask(taskId: number): Task {
   const { tasks } = store.getState();
   const task = tasks.find((t) => t.id === taskId);
 

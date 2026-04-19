@@ -29,20 +29,12 @@ export function render() {
       <h3>${task.title}</h3>
       <p>${task.description}</p>
 
-      <p><strong>Helpers:</strong> ${task.helpers.join(', ') || 'Nenhum'}</p>
-      <p><strong>Comentários:</strong> ${
-        task.comments.map((c) => c.text).join(', ') || 'Nenhum'
-      }</p>
+      <p><strong>Ajudantes:</strong> ${task.helpers.length}</p>
+      <p><strong>Comentários:</strong> ${task.comments.length}</p>
 
       <div class="comments">
-        <input
-          class="input"
-          type="text"
-          placeholder="Comentário"
-          id="comment-${task.id}"
-        />
-        <button class="btn" data-action="add-comment" data-id="${task.id}">
-          Adicionar
+        <button class="btn" data-action="open-comments" data-id="${task.id}">
+          Comentários
         </button>
       </div>
 
