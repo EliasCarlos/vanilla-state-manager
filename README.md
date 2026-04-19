@@ -2,7 +2,6 @@
 
 ### 🚀 Mini Trello com JavaScript puro (sem frameworks)
 
-\
 
 ---
 
