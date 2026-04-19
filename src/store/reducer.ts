@@ -4,7 +4,8 @@ export type Action =
   | { type: 'CREATE_TASK'; payload: Task }
   | { type: 'UPDATE_TASK'; payload: { taskId: number; status: Status; userId: string } }
   | { type: 'ADD_HELPER'; payload: { taskId: number; userId: string } }
-  | { type: 'ADD_COMMENT'; payload: { taskId: number; userId: string; text: string } };
+  | { type: 'ADD_COMMENT'; payload: { taskId: number; userId: string; text: string } }
+  | { type: 'DELETE_TASK'; payload: { taskId: number; userId: string } };
 
 export function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -53,6 +54,12 @@ export function reducer(state: State, action: Action) {
               }
             : t,
         ),
+      };
+
+    case 'DELETE_TASK':
+      return {
+        ...state,
+        tasks: state.tasks.filter((t: Task) => t.id !== action.payload.taskId),
       };
 
     default:

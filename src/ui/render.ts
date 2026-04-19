@@ -23,6 +23,9 @@ export function render() {
           <button data-action="complete-task" data-id="${task.id}">
             Concluir
           </button>
+          <button data-action="delete-task" data-id="${task.id}">
+            Deletar
+          </button>
         </div>
       </div>
     `,

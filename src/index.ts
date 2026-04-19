@@ -91,6 +91,18 @@ function canUserInteract(task: Task, userId: string): boolean {
   return task.userId === userId || task.helpers.indexOf(userId) !== -1;
 }
 
+export function deleteTask(taskId: number, userId: string) {
+  const task = findTask(taskId);
+
+  if (task.userId !== userId) {
+    throw new Error('Você não tem permissão para deletar esta task');
+  }
+
+  store.dispatch({ type: 'DELETE_TASK', payload: { taskId, userId } });
+
+  return { message: 'Task deletada com sucesso' };
+}
+
 store.subscribe(render);
 
 setupEvents();

@@ -1,4 +1,4 @@
-import { addHelper, createTask, updateTask } from '../index.js';
+import { addHelper, createTask, deleteTask, updateTask } from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
@@ -27,6 +27,11 @@ export function setupEvents() {
     if (target.dataset.action === 'complete-task') {
       const id = Number(target.dataset.id);
       updateTask(id, 'concluida', 'user1');
+    }
+
+    if (target.dataset.action === 'delete-task') {
+      const id = Number(target.dataset.id);
+      deleteTask(id, 'user1');
     }
   });
 }
