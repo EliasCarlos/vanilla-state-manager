@@ -4,11 +4,15 @@ export type Action =
   | { type: 'CREATE_TASK'; payload: Task }
   | { type: 'UPDATE_TASK'; payload: { taskId: number; status: Status; userId: string } }
   | { type: 'ADD_HELPER'; payload: { taskId: number; userId: string } }
-  | { type: 'ADD_COMMENT'; payload: { taskId: number; userId: string; text: string; commentId: number } }
+  | {
+      type: 'ADD_COMMENT';
+      payload: { taskId: number; userId: string; text: string; commentId: number };
+    }
   | { type: 'REMOVE_COMMENT'; payload: { taskId: number; userId: string; commentId: number } }
   | { type: 'DELETE_TASK'; payload: { taskId: number; userId: string } }
   | { type: 'OPEN_MODAL'; payload: { taskId: number } }
-  | { type: 'CLOSE_MODAL' };
+  | { type: 'CLOSE_MODAL' }
+  | { type: 'REORDER_TASKS'; payload: { updatedTasks: Task[] } };
 
 export function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -90,6 +94,15 @@ export function reducer(state: State, action: Action) {
       return {
         ...state,
         ui: { ...state.ui, modalTaskId: null },
+      };
+
+    case 'REORDER_TASKS':
+      return {
+        ...state,
+        tasks: state.tasks.map((t) => {
+          const updated = action.payload.updatedTasks.find((u) => u.id === t.id);
+          return updated ? updated : t;
+        }),
       };
 
     default:

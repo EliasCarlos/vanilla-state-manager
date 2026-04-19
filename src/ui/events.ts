@@ -94,18 +94,68 @@ export function setupEvents() {
     if (target.classList.contains('task')) {
       target.classList.remove('dragging');
     }
+    document.querySelectorAll('.column').forEach((c) => c.classList.remove('drag-over'));
   });
 
-  document.addEventListener('dragover', (e) => e.preventDefault());
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const column = (e.target as HTMLElement).closest('.column');
+    document.querySelectorAll('.column').forEach((c) => c.classList.remove('drag-over'));
+    if (column) column.classList.add('drag-over');
+  });
+
+  document.addEventListener('dragleave', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('column')) {
+      target.classList.remove('drag-over');
+    }
+  });
 
   document.addEventListener('drop', (e) => {
     e.preventDefault();
+    document.querySelectorAll('.column').forEach((c) => c.classList.remove('drag-over'));
+
     const target = e.target as HTMLElement;
     const column = target.closest('.column') as HTMLElement;
+    const targetTaskEl = target.closest('.task') as HTMLElement;
 
-    if (column && draggedTaskId !== null) {
-      updateTask(draggedTaskId, column.dataset.status as Status, 'user1');
-      draggedTaskId = null;
+    if (!column || draggedTaskId === null) return;
+
+    const newStatus = column.dataset.status as Status;
+    const { tasks } = store.getState();
+
+    const movingTask = tasks.find((t) => t.id === draggedTaskId);
+    if (!movingTask) return;
+
+    const tasksInColumn = tasks
+      .filter((t) => t.status === newStatus && t.id !== draggedTaskId)
+      .sort((a, b) => a.order - b.order);
+
+    let newIndex = tasksInColumn.length;
+
+    if (targetTaskEl) {
+      const targetId = Number(targetTaskEl.dataset.id);
+      const index = tasksInColumn.findIndex((t) => t.id === targetId);
+      if (index !== -1) {
+        newIndex = index;
+      }
     }
+
+    tasksInColumn.splice(newIndex, 0, {
+      ...movingTask,
+      status: newStatus,
+    });
+
+    const reordered = tasksInColumn.map((t, index) => ({
+      ...t,
+      order: index,
+    }));
+
+    store.dispatch({
+      type: 'REORDER_TASKS',
+      payload: { updatedTasks: reordered },
+    });
+
+    draggedTaskId = null;
   });
 }

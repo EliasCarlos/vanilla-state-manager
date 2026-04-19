@@ -9,10 +9,16 @@ export function render() {
 
   const { tasks, ui } = store.getState();
 
+  function getColumnTasks(status: Status) {
+    return tasks
+      .filter((task) => task.status === status)
+      .sort((a, b) => a.order - b.order);
+  }
+
   const columns = {
-    pendente: tasks.filter((task) => task.status === 'pendente'),
-    emAndamento: tasks.filter((task) => task.status === 'em andamento'),
-    concluido: tasks.filter((task) => task.status === 'concluida'),
+    pendente: getColumnTasks('pendente'),
+    emAndamento: getColumnTasks('em andamento'),
+    concluido: getColumnTasks('concluida'),
   };
 
   function renderColumn(title: string, status: Status, tasks: Task[]) {

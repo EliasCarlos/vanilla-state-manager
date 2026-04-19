@@ -10,6 +10,7 @@ export function createTask(title: string, description: string, userId: string): 
     description,
     userId,
     status: 'pendente',
+    order: getNextOrder('pendente'),
     helpers: [],
     comments: [],
     createdAt: new Date(),
@@ -100,6 +101,12 @@ export function removeComment(taskId: number, userId: string, commentId: number)
 
 function canUserInteract(task: Task, userId: string): boolean {
   return task.userId === userId || task.helpers.indexOf(userId) !== -1;
+}
+
+function getNextOrder(status: Status): number {
+  const { tasks } = store.getState();
+  const tasksInColumn = tasks.filter((t) => t.status === status);
+  return tasksInColumn.length;
 }
 
 export function deleteTask(taskId: number, userId: string) {

@@ -22,6 +22,7 @@ export interface Task {
   title: string;
   description: string;
   status: Status;
+  order: number;
   helpers: string[];
   comments: TaskComment[];
   createdAt: Date;
