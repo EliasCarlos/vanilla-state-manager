@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && cp index.html dist/index.html",
+    "build": "tsc && cp index.html dist/index.html && cp src/ui/styles.css dist/ui/",
     "start": "npx serve dist -p 3000"
   },
   "keywords": [],
