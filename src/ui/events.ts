@@ -90,6 +90,14 @@ export function setupEvents() {
             (c) => `
         <div class="comment-item">
           <p>${c.text}</p>
+          <p><strong>Autor:</strong> ${c.userId}</p>
+          <span class="comment-date">${new Date(c.createdAt).toLocaleString('pt-BR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}</span>
         </div>
       `,
           )
