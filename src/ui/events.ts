@@ -1,8 +1,11 @@
-import { addComment, addHelper, createTask, deleteTask, setFilter, updateTask } from '../index.js';
+import { Status } from '../domain/task.js';
+import { addComment, addHelper, createTask, deleteTask, updateTask } from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
   const descriptionInput = document.getElementById('description') as HTMLInputElement;
+
+  let draggedTaskId: number | null = null;
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
@@ -43,9 +46,41 @@ export function setupEvents() {
       commentInput.value = '';
     }
 
-    if (target.dataset.action === 'filter') {
-      const filter = target.dataset.filter as any;
-      setFilter(filter);
+    if (target.dataset.action === 'move') {
+      const id = Number(target.dataset.id);
+      const status = target.dataset.status as Status;
+      updateTask(id, status, 'user1');
+    }
+  });
+
+  document.addEventListener('dragstart', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('task')) {
+      draggedTaskId = Number(target.dataset.id);
+      target.classList.add('dragging');
+    }
+  });
+
+  document.addEventListener('dragend', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('task')) {
+      target.classList.remove('dragging');
+    }
+  });
+
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const target = e.target as HTMLElement;
+    const column = target.closest('.column') as HTMLElement;
+
+    if (column && draggedTaskId !== null) {
+      const newStatus = column.dataset.status as Status;
+      updateTask(draggedTaskId, newStatus, 'user1');
+      draggedTaskId = null;
     }
   });
 }

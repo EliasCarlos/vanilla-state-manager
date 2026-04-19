@@ -21,9 +21,9 @@ export function loadState(): State | null {
   }
 }
 
-export function debounceSaveState(state: State) {
-  let timeOut: ReturnType<typeof setTimeout> | null = null;
+let timeOut: ReturnType<typeof setTimeout> | null = null;
 
+export function debounceSaveState(state: State) {
   if (timeOut) {
     clearTimeout(timeOut);
   }
