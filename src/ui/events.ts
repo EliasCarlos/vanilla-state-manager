@@ -1,4 +1,4 @@
-import { addHelper, createTask, deleteTask, updateTask } from '../index.js';
+import { addComment, addHelper, createTask, deleteTask, updateTask } from '../index.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
@@ -32,6 +32,15 @@ export function setupEvents() {
     if (target.dataset.action === 'delete-task') {
       const id = Number(target.dataset.id);
       deleteTask(id, 'user1');
+    }
+
+    if (target.dataset.action === 'add-comment') {
+      const id = Number(target.dataset.id);
+      const commentInput = document.getElementById(`comment-${id}`) as HTMLInputElement;
+      const comment = commentInput.value;
+      addComment(id, 'user1', comment);
+
+      commentInput.value = '';
     }
   });
 }
