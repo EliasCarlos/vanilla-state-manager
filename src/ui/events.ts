@@ -4,17 +4,16 @@ import {
   addHelper,
   createTask,
   deleteTask,
-  findTask,
   removeComment,
   updateTask,
 } from '../index.js';
+import { store } from '../store/store.js';
 
 export function setupEvents() {
   const titleInput = document.getElementById('title') as HTMLInputElement;
   const descriptionInput = document.getElementById('description') as HTMLInputElement;
 
   let draggedTaskId: number | null = null;
-  let modalTaskId: number | null = null;
 
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
@@ -26,37 +25,58 @@ export function setupEvents() {
       if (!title.trim() || !description.trim()) return;
 
       createTask(title, description, 'user1');
-
       titleInput.value = '';
       descriptionInput.value = '';
     }
 
     if (target.dataset.action === 'add-helper') {
-      const id = Number(target.dataset.id);
-      addHelper(id, 'user2');
+      addHelper(Number(target.dataset.id), 'user2');
     }
-
     if (target.dataset.action === 'delete-task') {
-      const id = Number(target.dataset.id);
-      deleteTask(id, 'user1');
+      deleteTask(Number(target.dataset.id), 'user1');
     }
 
     if (target.dataset.action === 'move') {
-      const id = Number(target.dataset.id);
-      const status = target.dataset.status as Status;
-      updateTask(id, status, 'user1');
+      updateTask(Number(target.dataset.id), target.dataset.status as Status, 'user1');
+    }
+    if (target.dataset.action === 'open-comments') {
+      store.dispatch({ type: 'OPEN_MODAL', payload: { taskId: Number(target.dataset.id) } });
     }
 
-    if (target.dataset.action === 'open-comments') {
-      const id = Number(target.dataset.id);
-      openModal(id);
+    if (target.dataset.action === 'close-modal') {
+      store.dispatch({ type: 'CLOSE_MODAL' });
+    }
+    if (target.id === 'modal') {
+      store.dispatch({ type: 'CLOSE_MODAL' });
     }
 
     if (target.dataset.action === 'remove-comment') {
-      const commentId = Number(target.dataset.id);
-      if (modalTaskId !== null) {
-        removeComment(modalTaskId, 'user1', commentId);
-        openModal(modalTaskId);
+      const { ui } = store.getState();
+      if (ui.modalTaskId) {
+        removeComment(ui.modalTaskId, 'user1', Number(target.dataset.id));
+      }
+    }
+
+    if (target.dataset.action === 'submit-comment') {
+      handleAddComment();
+    }
+  });
+
+  const handleAddComment = () => {
+    const { ui } = store.getState();
+    const input = document.getElementById('modal-input') as HTMLInputElement;
+
+    if (!input || !input.value.trim() || !ui.modalTaskId) return;
+
+    addComment(ui.modalTaskId, 'user1', input.value);
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const { ui } = store.getState();
+      const input = document.activeElement as HTMLElement;
+      if (ui.modalTaskId && input.id === 'modal-input') {
+        handleAddComment();
       }
     }
   });
@@ -76,9 +96,7 @@ export function setupEvents() {
     }
   });
 
-  document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-  });
+  document.addEventListener('dragover', (e) => e.preventDefault());
 
   document.addEventListener('drop', (e) => {
     e.preventDefault();
@@ -86,76 +104,8 @@ export function setupEvents() {
     const column = target.closest('.column') as HTMLElement;
 
     if (column && draggedTaskId !== null) {
-      const newStatus = column.dataset.status as Status;
-      updateTask(draggedTaskId, newStatus, 'user1');
+      updateTask(draggedTaskId, column.dataset.status as Status, 'user1');
       draggedTaskId = null;
-    }
-  });
-
-  function openModal(taskId: number) {
-    const modal = document.getElementById('modal')!;
-    const commentsContainer = document.getElementById('modal-comments')!;
-
-    const task = findTask(taskId);
-
-    modalTaskId = taskId;
-
-    commentsContainer.innerHTML = task.comments.length
-      ? task.comments
-          .map(
-            (c) => `
-        <div class="comment-item">
-          <p>${c.text}</p>
-          <p><strong>Autor:</strong> ${c.userId}</p>
-          <span class="comment-date">${new Date(c.createdAt).toLocaleString('pt-BR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}</span>
-          <button data-action="remove-comment" data-id="${c.id}">Remover</button>
-        </div>
-      `,
-          )
-          .join('')
-      : '<p style="opacity:0.6;">Nenhum comentário ainda</p>';
-
-    modal.classList.remove('hidden');
-
-    const input = document.getElementById('modal-input') as HTMLInputElement;
-    input.value = '';
-    input.focus();
-
-    commentsContainer.scrollTop = commentsContainer.scrollHeight;
-  }
-
-  document.getElementById('modal-close')?.addEventListener('click', () => {
-    document.getElementById('modal')?.classList.add('hidden');
-  });
-
-  document.getElementById('modal')?.addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-      document.getElementById('modal')?.classList.add('hidden');
-    }
-  });
-
-  const handleAddComment = () => {
-    const input = document.getElementById('modal-input') as HTMLInputElement;
-
-    if (!input.value.trim() || modalTaskId === null) return;
-
-    addComment(modalTaskId, 'user1', input.value);
-    input.value = '';
-
-    openModal(modalTaskId);
-  };
-
-  document.getElementById('modal-add')?.addEventListener('click', handleAddComment);
-
-  document.getElementById('modal-input')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      handleAddComment();
     }
   });
 }

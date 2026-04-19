@@ -6,7 +6,9 @@ export type Action =
   | { type: 'ADD_HELPER'; payload: { taskId: number; userId: string } }
   | { type: 'ADD_COMMENT'; payload: { taskId: number; userId: string; text: string; commentId: number } }
   | { type: 'REMOVE_COMMENT'; payload: { taskId: number; userId: string; commentId: number } }
-  | { type: 'DELETE_TASK'; payload: { taskId: number; userId: string } };
+  | { type: 'DELETE_TASK'; payload: { taskId: number; userId: string } }
+  | { type: 'OPEN_MODAL'; payload: { taskId: number } }
+  | { type: 'CLOSE_MODAL' };
 
 export function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -76,6 +78,18 @@ export function reducer(state: State, action: Action) {
       return {
         ...state,
         tasks: state.tasks.filter((t: Task) => t.id !== action.payload.taskId),
+      };
+
+    case 'OPEN_MODAL':
+      return {
+        ...state,
+        ui: { ...state.ui, modalTaskId: action.payload.taskId },
+      };
+
+    case 'CLOSE_MODAL':
+      return {
+        ...state,
+        ui: { ...state.ui, modalTaskId: null },
       };
 
     default:

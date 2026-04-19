@@ -1,6 +1,13 @@
 export type Status = 'pendente' | 'concluida' | 'em andamento';
 
-export type State = { tasks: Task[] };
+export type UIState = {
+  modalTaskId: number | null;
+};
+
+export type State = {
+  tasks: Task[];
+  ui: UIState;
+};
 
 export type TaskComment = {
   id: number;

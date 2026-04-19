@@ -3,7 +3,8 @@ import { State } from '../domain/task.js';
 const STORAGE_KEY = 'vanilla-state-manager';
 
 export function saveState(state: State) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const { tasks } = state;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks }));
 }
 
 export function loadState(): State | null {
@@ -14,7 +15,11 @@ export function loadState(): State | null {
   }
 
   try {
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    return {
+      tasks: parsed.tasks || [],
+      ui: { modalTaskId: null },
+    };
   } catch (error) {
     console.error('Erro ao carregar estado', error);
     return null;

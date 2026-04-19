@@ -1,16 +1,13 @@
-import { Task } from '../domain/task.js';
+import { State, Task } from '../domain/task.js';
 import { Action, reducer } from './reducer.js';
 import { debounceSaveState, loadState } from './storage.js';
-
-type State = {
-  tasks: Task[];
-};
 
 export const store = {
   state:
     loadState() ||
     ({
       tasks: [],
+      ui: { modalTaskId: null },
     } as State),
 
   listeners: [] as Array<(newState: State, prevState: State) => void>,
